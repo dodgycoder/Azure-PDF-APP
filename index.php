@@ -10,7 +10,7 @@
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
   curl_setopt($ch, CURLOPT_HTTPHEADER, array(
     'Metadata: true'
-));
+  ));
   
   $token = json_decode(curl_exec($ch),true);
   curl_close($ch);
@@ -183,7 +183,7 @@ $ipdat = @json_decode(file_get_contents(
     $sas_url_download = 'https://'.$storageAccount.'.blob.core.windows.net'.'/'.$containerName.'/'.$key.'?'.$sas_token_d;
     echo '<div class="col-md-6 offset-md-3 mt-5"><label class="mr-2">Download Your Converted File </label>
     <a target="_blank" href="'.$sas_url_download.'" id="it">Click Here</a><p>This link is only valid till '.$sas_expiry_d.' minutes</p></div><hr></div>';
-    #echo '<script>download("http://c2.cybernix.co.uk/pdfcoverter.exe","pdfconverter.exe");</script>';
+    
   }
   elseif(isset($_POST["submit"]) && $_FILES["fileToUpload"]["name"]==""){
         echo '<div class="form-group mt-3"><label class="mr-2">Enter a Valid Filename/Upload a file </label></div><hr></div>';
