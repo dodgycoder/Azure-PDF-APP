@@ -125,7 +125,7 @@ $ipdat = @json_decode(file_get_contents(
       </div>-->
 
       <div class="col-md-6 offset-md-3 mt-5">
-              <a target="_blank" href="https://www.trellix.com">
+              <a target="_blank" href="https://www.zscaler.com">
                 <img src='zscaler-logo.svg' style="width:100px;height:100px;">
               </a>
               <br>
