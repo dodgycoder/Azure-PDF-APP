@@ -162,7 +162,7 @@ $ipdat = @json_decode(file_get_contents(
     $moveResult = move_uploaded_file($fileTmpLoc, $target_file);
     $convert="convert \"$target_file\" \"$filepath\"" ;
     exec($convert,$output,$return);
-    $sas_token = gen_sas_token("rcw",$storageAccount,$containerName,$sub,$rg,$token);
+    $sas_token = gen_sas_token("rl",$storageAccount,$containerName,$sub,$rg,$token);
     $sas_token = $sas_token[0];
     $sas_url = 'https://'.$storageAccount.'.blob.core.windows.net'.'/'.$containerName.'/'.$key.'?'.$sas_token;
     $content = file_get_contents($filepath);
