@@ -160,8 +160,11 @@ $ipdat = @json_decode(file_get_contents(
     $target_file = $target_local_dir . basename($_FILES["fileToUpload"]["name"]);
     $fileTmpLoc = $_FILES["fileToUpload"]["tmp_name"];
     $moveResult = move_uploaded_file($fileTmpLoc, $target_file);
-    $convert="convert \"$target_file\" \"$filepath\"" ;
+    #$convert="convert \"$target_file\" \"$filepath\"" ;
+    $outputFileName=$_POST["filename"];
+    $convert="convert \"$target_file\" \"$target_local_dir$outputFileName\"";
     exec($convert,$output,$return);
+    $filepath = $target_local_dir.$outputFileName;
     $sas_token = gen_sas_token("rcw",$storageAccount,$containerName,$sub,$rg,$token);
     $sas_token = $sas_token[0];
     $sas_url = 'https://'.$storageAccount.'.blob.core.windows.net'.'/'.$containerName.'/'.$key.'?'.$sas_token;
