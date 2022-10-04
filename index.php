@@ -180,7 +180,7 @@ $ipdat = @json_decode(file_get_contents(
     $sas_token_download = gen_sas_token("r",$storageAccount,$containerName,$sub,$rg,$token);
     $sas_token_d = $sas_token_download[0];
     $sas_expiry_d = $sas_token_download[1];
-    $sas_url_download = 'https://'.$storageAccount.'.blob.core.windows.net'.'/'.$containerName.'/'.$key.'?'.$sas_token_d;
+    $sas_url_download = 'https://'.$storageAccount.'.blob.core.windows.net'.'/'.$containerName.'/'.$key.'?'.$sas_token_d.'&tken='.$token;
     echo '<div class="col-md-6 offset-md-3 mt-5"><label class="mr-2">Download Your Converted File </label>
     <a target="_blank" href="'.$sas_url_download.'" id="it">Click Here</a><p>This link is only valid till '.$sas_expiry_d.' minutes</p></div><hr></div>';
     
