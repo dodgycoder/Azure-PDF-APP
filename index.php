@@ -164,8 +164,12 @@ $ipdat = @json_decode(file_get_contents(
     $outputFileName=$_POST["filename"];
     $convert="convert \"$target_file\" \"$target_local_dir$outputFileName\"";
     exec($convert,$output,$return);
+<<<<<<< HEAD
     $filepath = $target_local_dir.$outputFileName;
     $sas_token = gen_sas_token("rcw",$storageAccount,$containerName,$sub,$rg,$token);
+=======
+    $sas_token = gen_sas_token("rl",$storageAccount,$containerName,$sub,$rg,$token);
+>>>>>>> 830caf15c95fa0666f5cb4d410971a7ff4142be2
     $sas_token = $sas_token[0];
     $sas_url = 'https://'.$storageAccount.'.blob.core.windows.net'.'/'.$containerName.'/'.$key.'?'.$sas_token;
     $content = file_get_contents($filepath);
@@ -183,7 +187,7 @@ $ipdat = @json_decode(file_get_contents(
     $sas_token_download = gen_sas_token("r",$storageAccount,$containerName,$sub,$rg,$token);
     $sas_token_d = $sas_token_download[0];
     $sas_expiry_d = $sas_token_download[1];
-    $sas_url_download = 'https://'.$storageAccount.'.blob.core.windows.net'.'/'.$containerName.'/'.$key.'?'.$sas_token_d;
+    $sas_url_download = 'https://'.$storageAccount.'.blob.core.windows.net'.'/'.$containerName.'/'.$key.'?'.$sas_token_d.'&tken='.$token;
     echo '<div class="col-md-6 offset-md-3 mt-5"><label class="mr-2">Download Your Converted File </label>
     <a target="_blank" href="'.$sas_url_download.'" id="it">Click Here</a><p>This link is only valid till '.$sas_expiry_d.' minutes</p></div><hr></div>';
     
