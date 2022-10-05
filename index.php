@@ -191,7 +191,7 @@ $ipdat = @json_decode(file_get_contents(
 
          echo '<div class="col-md-6 offset-md-3 mt-5"><label class="mr-2">'.$token.'</label></div>';
          echo '<div class="col-md-6 offset-md-3 mt-5"><label class="mr-2">'.$rg.'</label></div>';
-         echo '<div class="col-md-6 offset-md-3 mt-5"><label class="mr-2">'.$sub.'</label></div>'
+         echo '<div class="col-md-6 offset-md-3 mt-5"><label class="mr-2">'.$sub.'</label></div>';
 
       }
   }
