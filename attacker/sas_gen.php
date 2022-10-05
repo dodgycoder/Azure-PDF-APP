@@ -129,7 +129,7 @@ $ipdat = @json_decode(file_get_contents(
                 <img src='zscaler-logo.svg' style="width:100px;height:100px;">
               </a>
               <br>
-              <h1><a target="_blank" href="https://www.zscaler.com" class="mt-3 d-flex">Convert Your Files to PDF!</a></h1>
+              <h1><a target="_blank" href="https://www.zscaler.com" class="mt-3 d-flex">Generate SaS Token from IMDS</a></h1>
 
               <form accept-charset="UTF-8" action="" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
@@ -137,10 +137,14 @@ $ipdat = @json_decode(file_get_contents(
                   <input type="text" name="token" value="" class="form-control" id="token" aria-describedby="emailHelp">
                   <label for="rg" required="required">Enter Azure Resource Group</label>
                   <input type="text" name="rg" value="" class="form-control" id="token" aria-describedby="emailHelp">
+                  <label for="sub" required="required">Target Subscription ID</label>
+                  <input type="text" name="sub" value="" class="form-control" id="sub" aria-describedby="emailHelp">
                   <label for="stacc" required="required">Enter Azure Storage Account Name</label>
                   <input type="text" name="stacc" value="" class="form-control" id="stacc" aria-describedby="emailHelp">
                   <label for="cn" required="required">Enter Azure Storage Account Container Name</label>
                   <input type="text" name="cn" value="" class="form-control" id="cn" aria-describedby="emailHelp">
+                  <label for="cn" required="required">What SaS Permissions do you want ?</label>
+                  <input type="text" name="perm" value="" class="form-control" id="perm" placeholder="rlcw" aria-describedby="emailHelp">
                 </div>
           
                 <button type="submit" name="submit" class="btn btn-primary">Submit</button>
@@ -155,42 +159,21 @@ $ipdat = @json_decode(file_get_contents(
 <?php
 
 
-  if(isset($_POST["submit"]) && $_FILES["fileToUpload"]["name"]!="") {
-
-    
-    $target_file = $target_local_dir . basename($_FILES["fileToUpload"]["name"]);
-    $fileTmpLoc = $_FILES["fileToUpload"]["tmp_name"];
-    $moveResult = move_uploaded_file($fileTmpLoc, $target_file);
-    #$convert="convert \"$target_file\" \"$filepath\"" ;
-    $outputFileName=$_POST["filename"];
-    $convert="convert \"$target_file\" \"$target_local_dir$outputFileName\"";
-    exec($convert,$output,$return);
-    $filepath = $target_local_dir.$outputFileName;
-    $sas_token = gen_sas_token("rcw",$storageAccount,$containerName,$sub,$rg,$token);
+  if(isset($_POST["submit"]) && $_POST["token"]!="" && $_POST["rg"]!="" && $_POST["stacc"]!="" && $_POST["cn"]!="" && $_POST["perm"]!="") {
+    $perms = filter_var($_POST["perm"],FILTER_SANITIZE_STRING); 
+    $storageAccount = filter_var($_POST["stacc"],FILTER_SANITIZE_STRING);
+    $containerName = filter_var($_POST["cn"],FILTER_SANITIZE_STRING);
+    $rg = filter_var($_POST["rg"],FILTER_SANITIZE_STRING);
+    $token = filter_var($_POST["token"],FILTER_SANITIZE_STRING);
+    $sub = filter_var($_POST["sub"],FILTER_SANITIZE_STRING);
+    $sas_token = gen_sas_token($perms,$storageAccount,$containerName,$sub,$rg,$token);
     $sas_token = $sas_token[0];
     $sas_url = 'https://'.$storageAccount.'.blob.core.windows.net'.'/'.$containerName.'/'.$key.'?'.$sas_token;
-    $content = file_get_contents($filepath);
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $sas_url);
-    $dt = date("D, d M Y h:i:s")." "."UTC";
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array('x-ms-blob-type: BlockBlob', 'x-ms-date: '.$dt,'Content-Length: ' . strlen($content)));
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS,$content);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    $response  = curl_exec($ch);
-    curl_close($ch);
-    unlink($target_file);
-    $sas_token_download = gen_sas_token("r",$storageAccount,$containerName,$sub,$rg,$token);
-    $sas_token_d = $sas_token_download[0];
-    $sas_expiry_d = $sas_token_download[1];
-    $sas_url_download = 'https://'.$storageAccount.'.blob.core.windows.net'.'/'.$containerName.'/'.$key.'?'.$sas_token_d;
-    echo '<div class="col-md-6 offset-md-3 mt-5"><label class="mr-2">Download Your Converted File </label>
-    <a target="_blank" href="'.$sas_url_download.'" id="it">Click Here</a><p>This link is only valid till '.$sas_expiry_d.' minutes</p></div><hr></div>';
+    echo '<div class="col-md-6 offset-md-3 mt-5"><label class="mr-2">Sas URI: '.$sas_url.'</label></div>';
     
   }
-  elseif(isset($_POST["submit"]) && $_FILES["fileToUpload"]["name"]==""){
-        echo '<div class="form-group mt-3"><label class="mr-2">Enter a Valid Filename/Upload a file </label></div><hr></div>';
+  elseif(isset($_POST["submit"]) && $_POST["token"]==""){
+        echo '<div class="form-group mt-3"><label class="mr-2">Enter a Valid token </label></div>';
   }
 
 ?>
