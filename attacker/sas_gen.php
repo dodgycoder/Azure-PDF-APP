@@ -142,12 +142,7 @@ $ipdat = @json_decode(file_get_contents(
                   <label for="cn" required="required">Enter Azure Storage Account Container Name</label>
                   <input type="text" name="cn" value="" class="form-control" id="cn" aria-describedby="emailHelp">
                 </div>
-                <hr>
-                <div class="form-group mt-3">
-                  <label class="mr-2">Upload your File</label>
-                  <input type="file" name="fileToUpload" id="fileToUpload">
-                </div>
-                <hr>
+          
                 <button type="submit" name="submit" class="btn btn-primary">Submit</button>
 
               </form>
