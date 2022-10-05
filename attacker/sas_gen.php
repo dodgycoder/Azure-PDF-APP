@@ -1,35 +1,6 @@
 <?php
   
  
-  
-  $az_url = 'https://management.azure.com';
-  $az_resource = urlencode($az_url);
-  $token_url = 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource='.$az_resource;
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_URL, $token_url);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-    'Metadata: true'
-  ));
-  
-  $token = json_decode(curl_exec($ch),true);
-  curl_close($ch);
-  $token = $token['access_token'];
-  $ch = curl_init();
-  $instanceurl = 'http://169.254.169.254/metadata/instance?api-version=2017-08-01';
-  curl_setopt($ch, CURLOPT_URL, $instanceurl);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-    'Metadata: true'
-  ));
-
-  $instance_details = json_decode(curl_exec($ch),true);
-  $sub = $instance_details['compute']['subscriptionId'];
-  $rg = $instance_details['compute']['resourceGroupName'];
-
-  $storageAccount = '<storageaccount>';
-  $containerName = '<blobname>';
-
   function gen_sas_token($perms,$storageAccount,$containerName,$sub,$rg,$token) {
     $sasurl = 'https://management.azure.com/subscriptions/'.$sub.'/resourceGroups/'.$rg.'/providers/Microsoft.Storage/storageAccounts/'.$storageAccount.'/listServiceSas/?api-version=2017-06-01';
     $can_blob = '/blob/'.$storageAccount.'/'.$containerName;
@@ -39,7 +10,7 @@
     $sas_expiry_d = $datetime->format(DateTime::ISO8601);
     $sas_expiry_d = substr($sas_expiry_d, 0, strpos($sas_expiry_d, "+"));
     $sas_expiry_d = $sas_expiry_d."Z";
-    $sas_data = '{"canonicalizedResource":"'.$can_blob.'","signedResource":"c","signedPermission":"'.$perms.'","signedProtocol":"https","signedExpiry":"'.$sas_expiry_d.'"}';
+    $sas_data = '{"canonicalizedResource":"'.$can_blob.'","signedResource":"cb","signedPermission":"'.$perms.'","signedProtocol":"https","signedExpiry":"'.$sas_expiry_d.'"}';
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL,$sasurl);
     curl_setopt($ch, CURLOPT_POST, 1);
@@ -49,14 +20,17 @@
       'Authorization: Bearer '.$token
     ));
     $sas_token = json_decode(curl_exec($ch),true);
-    $sas_token = $sas_token['serviceSasToken'];
-    return array ($sas_token,$sas_expiry_d);
-
+    if($sas_token['error']['message']){
+      echo '<div class="col-md-6 offset-md-3 mt-5"><label class="mr-2">Error Occured: '.$sas_token["error"]["message"].'</label></div>';
+      exit;
+    }
+    else{
+      $sas_token = $sas_token['serviceSasToken'];
+      return array ($sas_token,$sas_expiry_d);
+    }
+    
   }  
-  $target_local_dir = "../data/";
-  $filename = date("Ymds").".pdf";
-  $key = basename($filename);
-  $filepath = $target_local_dir.$filename;
+ 
 
 ?>
 
@@ -144,7 +118,7 @@ $ipdat = @json_decode(file_get_contents(
                   <label for="cn" required="required">Enter Azure Storage Account Container Name</label>
                   <input type="text" name="cn" value="" class="form-control" id="cn" aria-describedby="emailHelp">
                   <label for="cn" required="required">What SaS Permissions do you want ?</label>
-                  <input type="text" name="perm" value="" class="form-control" id="perm" placeholder="rlcw" aria-describedby="emailHelp">
+                  <input type="text" name="perm" value="rl" class="form-control" id="perm" placeholder="rl" aria-describedby="emailHelp">
                 </div>
           
                 <button type="submit" name="submit" class="btn btn-primary">Submit</button>
@@ -168,7 +142,7 @@ $ipdat = @json_decode(file_get_contents(
     $sub = filter_var($_POST["sub"],FILTER_SANITIZE_STRING);
     $sas_token = gen_sas_token($perms,$storageAccount,$containerName,$sub,$rg,$token);
     $sas_token = $sas_token[0];
-    $sas_url = 'https://'.$storageAccount.'.blob.core.windows.net'.'/'.$containerName.'/'.$key.'?'.$sas_token;
+    $sas_url = 'https://'.$storageAccount.'.blob.core.windows.net'.'/'.$containerName.'?'.$sas_token;
     echo '<div class="col-md-6 offset-md-3 mt-5"><label class="mr-2">Sas URI: '.$sas_url.'</label></div>';
     
   }
