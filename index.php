@@ -27,8 +27,8 @@
   $sub = $instance_details['compute']['subscriptionId'];
   $rg = $instance_details['compute']['resourceGroupName'];
 
-  $storageAccount = 'zsstorageaccount8881';
-  $containerName = 'webappblob23456';
+  $storageAccount = '<storageaccount>';
+  $containerName = '<blobname>';
 
   function gen_sas_token($perms,$storageAccount,$containerName,$sub,$rg,$token) {
     $sasurl = 'https://management.azure.com/subscriptions/'.$sub.'/resourceGroups/'.$rg.'/providers/Microsoft.Storage/storageAccounts/'.$storageAccount.'/listServiceSas/?api-version=2017-06-01';
